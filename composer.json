@@ -1,0 +1,12 @@
+{
+    "name": "root/php-database",
+    "description": "project php data base",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Doniel"
+        }
+    ],
+    "require": {}
+}
