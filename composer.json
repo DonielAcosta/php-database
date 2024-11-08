@@ -8,5 +8,10 @@
             "name": "Doniel"
         }
     ],
+    "autoload": {
+        "psr-4": {
+            "Database\\": "database/"
+        }
+    },
     "require": {}
 }
