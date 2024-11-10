@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Controllers;
-
+use Database\MySQLi\Connection;
 class IncomesController {
 
     /**
@@ -12,12 +12,24 @@ class IncomesController {
     /**
      * Muestra un formulario para crear un nuevo recurso
      */
-    public function create() {}
+    public function create() {
+
+    }
 
     /**
      * Guarda un nuevo recurso en la base de datos
      */
-    public function store() {}
+    public function store($data) {
+        $connection = Connection::getInstance()->getDatabaseinstance();
+
+        $connection->query("INSERT INTO incomes(payment_method,type,date,amount,description) VALUES(
+            {$data['payment_method']},
+            {$data['type']},
+            '{$data['date']}',
+            {$data['amount']},
+            '{$data['description']}'
+        );"); 
+    }
 
     /**
      * Muestra un único recurso especificado

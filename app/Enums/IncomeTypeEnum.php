@@ -1,8 +1,7 @@
-<php
+<?php
 namespace App\Enums;
- enum IncomeTypeEnum: int{
-    case Salary =1;
-    case Refund =2;
- }
 
-?>
+enum IncomeTypeEnum: int {
+    case Salary = 1;
+    case Refund = 2;
+}
