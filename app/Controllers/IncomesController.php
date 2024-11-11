@@ -1,45 +1,52 @@
 <?php
 
 namespace App\Controllers;
-use Database\MySQLi\Connection;
+
+use Database\PDO\Connection;
+
 class IncomesController {
+
+    private $connection;
+
+    public function __construct() {
+        $this->connection = Connection::getInstance()->getDatabaseinstance();
+    }
 
     /**
      * Muestra una lista de este recurso
      */
-    public function index() {}
+    public function index() {
+
+        $sql = $this->connection->prepare("SELECT * FROM incomes");
+        $sql->execute();
+
+        while($row = $sql->fetch())
+            echo "Ganaste " . $row["amount"] . " USD en: " . $row["description"] . "\n";
+
+    }
 
     /**
      * Muestra un formulario para crear un nuevo recurso
      */
-    public function create() {
-
-    }
+    public function create() {}
 
     /**
      * Guarda un nuevo recurso en la base de datos
      */
     public function store($data) {
-        $connection = Connection::getInstance()->getDatabaseinstance();
 
-        $MYSQL=$connection->prepare("INSERT INTO incomes(payment_method,type,date,amount,description) VALUES(?,?,?,?,?);"); 
-        $MYSQL->bind_param("iisds",$payment_method,$type,$date,$amount,$description);
+        $sql = $this->connection->prepare("INSERT INTO incomes (payment_method, type, date, amount, description) VALUES (:payment_method, :type, :date, :amount, :description)");
 
-        $payment_method = $data['payment_method'];
-        $type           = $data['type'];
-        $date           = $data['date'];
-        $amount         = $data['amount'];
-        $description    = $data['description'];
+        $sql->bindValue(":payment_method", $data["payment_method"]);
+        $sql->bindValue(":type", $data["type"]);
+        $sql->bindValue(":date", $data["date"]);
+        $sql->bindValue(":amount", $data["amount"]);
+        $sql->bindValue(":description", $data["description"]);
 
-        $MYSQL->execute();
-        echo "Registro insertado {$MYSQL->affected_rows} Filas ";
+        $sql->execute();
+
     }
 
-    // {$data['payment_method']},
-    // {$data['type']},
-    // '{$data['date']}',
-    // {$data['amount']},
-    // '{$data['description']}'
     /**
      * Muestra un único recurso especificado
      */
@@ -62,12 +69,14 @@ class IncomesController {
     
 }
 
+/*
 
+index - Display a listing of the resource.
+create - Show the form for creating a new resource.
+store - Store a newly created resource in storage.
+show - Display the specified resource.
+edit - Show the form for editing the specified resource.
+update - Update the specified resource in storage.
+destroy - Remove the specified resource from storage.
 
-// index - Display a listing of the resource.
-// create - Show the form for creating a new resource.
-// store - Store a newly created resource in storage.
-// show - Display the specified resource.
-// edit - Show the form for editing the specified resource.
-// update - Update the specified resource in storage.
-// destroy - Remove the specified resource from storage.
+*/
