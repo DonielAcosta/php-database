@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Controllers;
-
+use Database\PDO\Connection;
 class WithdrawalsController {
 
     /**
@@ -17,7 +17,18 @@ class WithdrawalsController {
     /**
      * Guarda un nuevo recurso en la base de datos
      */
-    public function store() {}
+    public function store($data) {
+        $cn = Connection::getInstance()->getDatabaseinstance();
+        
+        $affected=$cn->exec("INSERT INTO withdrawals(payment_method,type,date,amount,description) VALUES(
+        {$data['payment_method']},
+        {$data['type']},
+        '{$data['date']}',
+        {$data['amount']},
+        '{$data['description']}');");
+
+        echo "Registro insertado $affected Filas";
+    }
 
     /**
      * Muestra un único recurso especificado

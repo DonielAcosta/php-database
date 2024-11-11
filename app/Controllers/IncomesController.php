@@ -22,15 +22,24 @@ class IncomesController {
     public function store($data) {
         $connection = Connection::getInstance()->getDatabaseinstance();
 
-        $connection->query("INSERT INTO incomes(payment_method,type,date,amount,description) VALUES(
-            {$data['payment_method']},
-            {$data['type']},
-            '{$data['date']}',
-            {$data['amount']},
-            '{$data['description']}'
-        );"); 
+        $MYSQL=$connection->prepare("INSERT INTO incomes(payment_method,type,date,amount,description) VALUES(?,?,?,?,?);"); 
+        $MYSQL->bind_param("iisds",$payment_method,$type,$date,$amount,$description);
+
+        $payment_method = $data['payment_method'];
+        $type           = $data['type'];
+        $date           = $data['date'];
+        $amount         = $data['amount'];
+        $description    = $data['description'];
+
+        $MYSQL->execute();
+        echo "Registro insertado {$MYSQL->affected_rows} Filas ";
     }
 
+    // {$data['payment_method']},
+    // {$data['type']},
+    // '{$data['date']}',
+    // {$data['amount']},
+    // '{$data['description']}'
     /**
      * Muestra un único recurso especificado
      */
