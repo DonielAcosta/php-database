@@ -20,14 +20,23 @@ class WithdrawalsController {
     public function store($data) {
         $cn = Connection::getInstance()->getDatabaseinstance();
         
-        $affected=$cn->exec("INSERT INTO withdrawals(payment_method,type,date,amount,description) VALUES(
-        {$data['payment_method']},
-        {$data['type']},
-        '{$data['date']}',
-        {$data['amount']},
-        '{$data['description']}');");
+        $affected=$cn->prepare("INSERT INTO withdrawals(payment_method,type,date,amount,description) VALUES(:payment_method,:type,:date,:amount,:description)");
 
-        echo "Registro insertado $affected Filas";
+        $affected->bindValue(':payment_method',$data["payment_method"]);
+        $affected->bindValue(':type',$data["type"]);
+        $affected->bindValue(':date',$data["date"]);
+        $affected->bindValue(':amount',$data["amount"]);
+        $affected->bindValue(':description',$data["description"]);
+
+        $data["amount"] = 45;
+        $affected->execute();
+        // echo "Registro insertado $affected Filas";
+
+        // {$data['payment_method']},
+        // {$data['type']},
+        // '{$data['date']}',
+        // {$data['amount']},
+        // '{$data['description']}');
     }
 
     /**
