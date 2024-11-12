@@ -20,33 +20,34 @@ class IncomesController {
         $sql = $this->connection->prepare("SELECT * FROM incomes");
         $sql->execute();
 
-        $sql->bindColumn('amount', $amount);
-        $sql->bindColumn('description', $description);
-        while($sql->fetch())
-            echo "Ganaste  $amount USD en: $description \n";
-
+        $resul =$sql->fetchAll();
+        require("../resources/views/incomes/index.php");
     }
 
     /**
      * Muestra un formulario para crear un nuevo recurso
      */
-    public function create() {}
+    public function create() {
+        require("../resources/views/incomes/create.php");
+
+    }
 
     /**
      * Guarda un nuevo recurso en la base de datos
      */
     public function store($data) {
-
         $sql = $this->connection->prepare("INSERT INTO incomes (payment_method, type, date, amount, description) VALUES (:payment_method, :type, :date, :amount, :description)");
-
+    
         $sql->bindValue(":payment_method", $data["payment_method"]);
         $sql->bindValue(":type", $data["type"]);
         $sql->bindValue(":date", $data["date"]);
         $sql->bindValue(":amount", $data["amount"]);
         $sql->bindValue(":description", $data["description"]);
-
+    
         $sql->execute();
-
+    
+        header("Location: /php-Database/incomes");
+        exit();
     }
 
     /**
