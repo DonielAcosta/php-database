@@ -17,23 +17,13 @@ class WithdrawalsController {
      */
     public function index() {
 
-        $sql = $this->connection->prepare("SELECT * FROM withdrawals");
-        $sql->execute();
+        $stmt = $this->connection->prepare("SELECT * FROM withdrawals");
+        $stmt->execute();
 
-        $results = $sql->fetchAll();
+        $results = $stmt->fetchAll();
 
         foreach($results as $result)
             echo "Gastaste " . $result["amount"] . " USD en: " . $result["description"] . "\n";
-
-        // Esto es usanfo Fetch Column
-
-        /* $sql = $this->connection->prepare("SELECT amount, description FROM withdrawals");
-        $sql->execute();
-
-        $results = $sql->fetchAll(\PDO::FETCH_COLUMN, 0);
-
-        foreach($results as $result)
-            echo "Gastaste $result USD \n"; */
 
     }
 
@@ -47,17 +37,17 @@ class WithdrawalsController {
      */
     public function store($data) {
 
-        $sql = $this->connection->prepare("INSERT INTO withdrawals (payment_method, type, date, amount, description) VALUES (:payment_method, :type, :date, :amount, :description)");
+        $stmt = $this->connection->prepare("INSERT INTO withdrawals (payment_method, type, date, amount, description) VALUES (:payment_method, :type, :date, :amount, :description)");
 
-        $sql->bindValue(":payment_method", $data["payment_method"]);
-        $sql->bindValue(":type", $data["type"]);
-        $sql->bindValue(":date", $data["date"]);
-        $sql->bindValue(":amount", $data["amount"]);
-        $sql->bindValue(":description", $data["description"]);
+        $stmt->bindValue(":payment_method", $data["payment_method"]);
+        $stmt->bindValue(":type", $data["type"]);
+        $stmt->bindValue(":date", $data["date"]);
+        $stmt->bindValue(":amount", $data["amount"]);
+        $stmt->bindValue(":description", $data["description"]);
 
         $data["description"] = "Compré cosas para mí";
 
-        $sql->execute();
+        $stmt->execute();
 
     }
 
@@ -66,12 +56,12 @@ class WithdrawalsController {
      */
     public function show($id) {
 
-        $sql = $this->connection->prepare("SELECT * FROM withdrawals WHERE id=:id");
-        $sql->execute([
+        $stmt = $this->connection->prepare("SELECT * FROM withdrawals WHERE id=:id");
+        $stmt->execute([
             ":id" => $id
         ]);
 
-        $result = $sql->fetch(\PDO::FETCH_ASSOC);
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         echo "El registro con id $id dice que te gastaste {$result['amount']} USD en {$result['description']}";
 
@@ -85,11 +75,37 @@ class WithdrawalsController {
     /**
      * Actualiza un recurso específico en la base de datos
      */
-    public function update() {}
+    public function update($data, $id) {
+
+        $stmt = $this->connection->prepare("UPDATE incomes SET 
+            payment_method = :payment_method, 
+            type = :type, 
+            date = :date, 
+            amount = :amount, 
+            description = :description
+        WHERE id=:id;");
+
+        $stmt->execute([
+            ":id" => $id,
+            ":payment_method" => $data["payment_method"],
+            ":type" => $data["type"],
+            ":date" => $data["date"],
+            ":amount" => $data["amount"],
+            ":description" => $data["description"],
+        ]);
+
+    }
 
     /**
      * Elimina un recurso específico de la base de datos
      */
-    public function destroy() {}
-    
+    public function destroy($id) {
+
+        $delete = $this->connection->prepare("DELETE FROM withdrawals WHERE id=:id;");
+
+        $delete->execute([
+            ":id" => $id
+        ]);
+
+    }
 }

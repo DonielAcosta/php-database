@@ -20,8 +20,10 @@ class IncomesController {
         $sql = $this->connection->prepare("SELECT * FROM incomes");
         $sql->execute();
 
-        while($row = $sql->fetch())
-            echo "Ganaste " . $row["amount"] . " USD en: " . $row["description"] . "\n";
+        $sql->bindColumn('amount', $amount);
+        $sql->bindColumn('description', $description);
+        while($sql->fetch())
+            echo "Ganaste  $amount USD en: $description \n";
 
     }
 
@@ -50,7 +52,13 @@ class IncomesController {
     /**
      * Muestra un único recurso especificado
      */
-    public function show() {}
+    public function show($id){
+        $sql = $this->connection->prepare("SELECT * FROM incomes WHERE id=:id");
+        $sql->execute([
+            ':id' => $id
+        ]);
+
+    }
 
     /**
      * Muestra el formulario para editar un recurso
@@ -60,12 +68,36 @@ class IncomesController {
     /**
      * Actualiza un recurso específico en la base de datos
      */
-    public function update() {}
+    public function update($data,$id){
+        $sql = $this->connection->prepare("UPDATE incomes SET payment_method=:payment_method, type=:type, date=:date, amount=:amount, description=:description WHERE id=:id");
+
+        $sql->bindValue(":payment_method", $data["payment_method"]);
+        $sql->bindValue(":type", $data["type"]);
+        $sql->bindValue(":date", $data["date"]);
+        $sql->bindValue(":amount", $data["amount"]);
+        $sql->bindValue(":description", $data["description"]);
+        $sql->bindValue(":id", $id);
+
+        $sql->execute();
+    }
 
     /**
      * Elimina un recurso específico de la base de datos
      */
-    public function destroy() {}
+    public function destroy($id) {
+        $this->connection->beginTransaction();
+        $sql = $this->connection->prepare("DELETE FROM incomes WHERE id = :id");
+        $sql->execute([':id' => $id]);
+
+        $conf = readline("quieres borrar el registro?");
+
+        if(strtolower($conf) =="no"){
+            $this->connection->rollBack();
+        }else{
+            $this->connection->commit();
+            echo "Registro eliminado con éxito!";
+        }
+    }
     
 }
 
